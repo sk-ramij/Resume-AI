@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ResumeAI — Land Your Dream Job</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,700;0,900;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #07080f;
+  --surface: #0f1018;
+  --surface2: #171822;
+  --border: #232438;
+  --accent: #4f8ef7;
+  --accent2: #f7754f;
+  --green: #3dd68c;
+  --gold: #f5d060;
+  --text: #dde1f0;
+  --muted: #6b7194;
+  --radius: 16px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Ambient background blobs */
+.blob {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.5;
+}
+.blob-1 { width: 500px; height: 500px; background: rgba(79,142,247,0.1); top: -150px; left: -100px; }
+.blob-2 { width: 400px; height: 400px; background: rgba(247,117,79,0.07); bottom: -100px; right: -80px; }
+.blob-3 { width: 300px; height: 300px; background: rgba(61,214,140,0.06); top: 40%; left: 40%; }
+
+/* NAV */
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 48px;
+  position: sticky; top: 0;
+  background: rgba(7,8,15,0.8);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  z-index: 100;
+}
+.logo {
+  font-family: 'Fraunces', serif;
+  font-size: 1.45rem;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  color: var(--text);
+}
+.logo span { color: var(--accent); }
+.nav-right { display: flex; align-items: center; gap: 16px; }
+.badge-free {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--green);
+  background: rgba(61,214,140,0.1);
+  border: 1px solid rgba(61,214,140,0.2);
+  padding: 5px 12px;
+  border-radius: 20px;
+}
+.nav-pro-btn {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--bg);
+  background: var(--gold);
+  padding: 7px 16px;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  transition: opacity 0.2s;
+}
+.nav-pro-btn:hover { opacity: 0.85; }
+
+/* HERO */
+.hero {
+  text-align: center;
+  padding: 72px 24px 56px;
+  position: relative; z-index: 1;
+  animation: fadeUp 0.7s ease both;
+}
+.hero-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(79,142,247,0.1);
+  border: 1px solid rgba(79,142,247,0.25);
+  color: var(--accent);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  padding: 7px 18px;
+  border-radius: 30px;
+  margin-bottom: 28px;
+}
+.hero-pill::before { content: '✦'; font-size: 0.65rem; }
+h1 {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(2.2rem, 5.5vw, 3.8rem);
+  font-weight: 900;
+  line-height: 1.08;
+  letter-spacing: -1px;
+  margin-bottom: 18px;
+  color: #eef0fa;
+}
+h1 em {
+  font-style: italic;
+  color: var(--accent);
+  background: linear-gradient(135deg, var(--accent), #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.hero-sub {
+  color: var(--muted);
+  font-size: 1.05rem;
+  max-width: 480px;
+  margin: 0 auto 44px;
+  line-height: 1.75;
+  font-weight: 300;
+}
+.hero-stats {
+  display: flex;
+  justify-content: center;
+  gap: 48px;
+}
+.stat-val {
+  font-family: 'Fraunces', serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--gold);
+  display: block;
+}
+.stat-lbl { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+
+/* MAIN */
+.app {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 24px 80px;
+  position: relative; z-index: 1;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+/* CARD */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 28px;
+}
+
+.card-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+.card-icon {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+.ci-blue { background: rgba(79,142,247,0.15); }
+.ci-orange { background: rgba(247,117,79,0.15); }
+.ci-gold { background: rgba(245,208,96,0.15); }
+.ci-green { background: rgba(61,214,140,0.15); }
+
+.card-title {
+  font-family: 'Fraunces', serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #eef0fa;
+}
+.card-desc {
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin-bottom: 22px;
+  padding-left: 48px;
+  line-height: 1.5;
+}
+
+/* FORM */
+.section-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 20px 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.form-group { margin-bottom: 14px; }
+label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+input, textarea, select {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  padding: 11px 14px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  resize: vertical;
+}
+input:focus, textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(79,142,247,0.12);
+}
+textarea { min-height: 82px; }
+
+.two-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* GENERATE BUTTON */
+.btn-generate {
+  width: 100%;
+  margin-top: 10px;
+  padding: 15px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+  letter-spacing: 0.2px;
+}
+.btn-generate::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+}
+.btn-generate:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(79,142,247,0.3); }
+.btn-generate:disabled { opacity: 0.55; cursor: not-allowed; transform: none; box-shadow: none; }
+
+/* FREE LIMIT NOTICE */
+.limit-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: rgba(245,208,96,0.06);
+  border: 1px solid rgba(245,208,96,0.18);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-top: 12px;
+  font-size: 0.8rem;
+  color: #c4a84a;
+  line-height: 1.5;
+}
+.limit-notice .icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+
+/* RIGHT PANEL STATES */
+.panel-empty {
+  text-align: center;
+  padding: 64px 24px;
+}
+.panel-empty .big-icon { font-size: 4rem; margin-bottom: 16px; opacity: 0.5; }
+.panel-empty h3 {
+  font-family: 'Fraunces', serif;
+  font-size: 1.2rem;
+  color: #eef0fa;
+  margin-bottom: 8px;
+}
+.panel-empty p { color: var(--muted); font-size: 0.85rem; line-height: 1.6; }
+
+/* LOADING */
+.panel-loading { display: none; text-align: center; padding: 48px 24px; }
+.panel-loading.show { display: block; }
+.spin {
+  width: 48px; height: 48px;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+  margin: 0 auto 20px;
+}
+.load-title {
+  font-family: 'Fraunces', serif;
+  font-size: 1.1rem;
+  margin-bottom: 6px;
+  color: #eef0fa;
+}
+.load-sub { font-size: 0.83rem; color: var(--muted); margin-bottom: 28px; }
+.steps { text-align: left; max-width: 260px; margin: 0 auto; }
+.step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  font-size: 0.83rem;
+  color: var(--muted);
+  transition: color 0.3s;
+  border-bottom: 1px solid var(--border);
+}
+.step:last-child { border-bottom: none; }
+.step-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--border);
+  flex-shrink: 0;
+  transition: background 0.3s;
+}
+.step.active { color: var(--text); }
+.step.active .step-dot { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+.step.done { color: var(--green); }
+.step.done .step-dot { background: var(--green); }
+
+/* RESULT */
+.panel-result { display: none; }
+.panel-result.show { display: block; }
+
+/* ATS SCORE CARD */
+.score-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.score-circle {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  background: conic-gradient(var(--green) 0deg, var(--border) 0deg);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  transition: background 1s ease;
+}
+.score-circle::before {
+  content: '';
+  position: absolute;
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: var(--surface2);
+}
+.score-num {
+  font-family: 'Fraunces', serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--green);
+  position: relative;
+  z-index: 1;
+}
+.score-info h4 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #eef0fa;
+  margin-bottom: 4px;
+}
+.score-info p { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+
+/* TABS */
+.tabs {
+  display: flex;
+  gap: 4px;
+  background: var(--surface2);
+  padding: 4px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+.tab {
+  flex: 1;
+  padding: 9px 6px;
+  border: none;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--muted);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.18s;
+  white-space: nowrap;
+}
+.tab.on {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 1px 6px rgba(0,0,0,0.4);
+}
+
+.tab-pane { display: none; }
+.tab-pane.on { display: block; }
+
+.result-text {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px;
+  font-size: 0.86rem;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  max-height: 420px;
+  overflow-y: auto;
+  color: var(--text);
+}
+.result-text::-webkit-scrollbar { width: 5px; }
+.result-text::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+.btn-copy {
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--muted);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+.btn-copy:hover { border-color: var(--accent); color: var(--accent); }
+
+/* TIPS */
+.tips { list-style: none; }
+.tip {
+  display: flex;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.85rem;
+  color: var(--muted);
+  line-height: 1.55;
+}
+.tip:last-child { border-bottom: none; }
+.tip-n {
+  width: 22px; height: 22px;
+  border-radius: 6px;
+  background: rgba(79,142,247,0.15);
+  color: var(--accent);
+  font-size: 0.7rem;
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* PRO UPSELL */
+.pro-banner {
+  margin-top: 18px;
+  background: linear-gradient(135deg, rgba(245,208,96,0.08), rgba(247,117,79,0.06));
+  border: 1px solid rgba(245,208,96,0.2);
+  border-radius: 14px;
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.pro-text h4 {
+  font-family: 'Fraunces', serif;
+  font-size: 1rem;
+  color: var(--gold);
+  margin-bottom: 4px;
+}
+.pro-text p { font-size: 0.78rem; color: var(--muted); line-height: 1.4; }
+.btn-pro {
+  background: var(--gold);
+  color: var(--bg);
+  border: none;
+  border-radius: 10px;
+  padding: 9px 18px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: opacity 0.2s;
+}
+.btn-pro:hover { opacity: 0.85; }
+
+/* ERROR */
+.error-box {
+  background: rgba(247,117,79,0.08);
+  border: 1px solid rgba(247,117,79,0.25);
+  border-radius: 12px;
+  padding: 16px 18px;
+  color: #f7a07a;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  display: none;
+  margin-top: 12px;
+}
+.error-box.show { display: block; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(22px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 780px) {
+  nav { padding: 14px 20px; }
+  .hero { padding: 48px 20px 36px; }
+  .hero-stats { gap: 28px; }
+  .layout { grid-template-columns: 1fr; }
+  .two-inputs { grid-template-columns: 1fr; }
+  .app { padding: 0 16px 60px; }
+}
+</style>
+</head>
+<body>
+
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+<div class="blob blob-3"></div>
+
+<nav>
+  <div class="logo">Resume<span>AI</span></div>
+  <div class="nav-right">
+    <div class="badge-free">Free</div>
+    <button class="nav-pro-btn" onclick="alert('Pro plan coming soon! ₹99/month for unlimited resumes.')">⭐ Go Pro</button>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-pill">AI-Powered Career Tool</div>
+  <h1>Your Resume.<br/><em>Perfected</em> by AI.</h1>
+  <p class="hero-sub">Fill in your details and get a job-ready resume, cover letter, and ATS score — in under 30 seconds.</p>
+  <div class="hero-stats">
+    <div>
+      <span class="stat-val">12K+</span>
+      <span class="stat-lbl">Resumes Built</span>
+    </div>
+    <div>
+      <span class="stat-val">93%</span>
+      <span class="stat-lbl">ATS Pass Rate</span>
+    </div>
+    <div>
+      <span class="stat-val">Free</span>
+      <span class="stat-lbl">No Sign Up</span>
+    </div>
+  </div>
+</div>
+
+<div class="app">
+  <div class="layout">
+
+    <!-- LEFT: FORM -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-icon ci-blue">✏️</div>
+        <div class="card-title">Your Details</div>
+      </div>
+      <div class="card-desc">Fill in your info — more detail = better resume.</div>
+
+      <div class="section-label">Personal Info</div>
+      <div class="two-inputs">
+        <div class="form-group">
+          <label>Full Name *</label>
+          <input id="name" type="text" placeholder="Rahul Sharma"/>
+        </div>
+        <div class="form-group">
+          <label>Target Role *</label>
+          <input id="role" type="text" placeholder="Software Developer"/>
+        </div>
+      </div>
+      <div class="two-inputs">
+        <div class="form-group">
+          <label>Email</label>
+          <input id="email" type="email" placeholder="rahul@email.com"/>
+        </div>
+        <div class="form-group">
+          <label>Phone</label>
+          <input id="phone" type="text" placeholder="+91 98765 43210"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>LinkedIn / GitHub / Portfolio</label>
+        <input id="links" type="text" placeholder="linkedin.com/in/yourname"/>
+      </div>
+
+      <div class="section-label">Background</div>
+      <div class="form-group">
+        <label>Work Experience</label>
+        <textarea id="experience" placeholder="Company, Role, Duration, What you did. E.g: TCS, Dev, 2022-2024, built APIs, improved speed 40%..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Education</label>
+        <textarea id="education" placeholder="Degree, College, Year, Grade. E.g: B.Tech CS, ABC College, 2022, 8.5 CGPA"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Skills</label>
+        <input id="skills" type="text" placeholder="Python, React, SQL, Git, AWS..."/>
+      </div>
+      <div class="form-group">
+        <label>Projects <span style="color:var(--muted); font-weight:300">(optional)</span></label>
+        <textarea id="projects" placeholder="Project name, what it does, tech used..."></textarea>
+      </div>
+
+      <div class="section-label">Target Job</div>
+      <div class="form-group">
+        <label>Job Description / Role Details</label>
+        <textarea id="jobDesc" placeholder="Paste the job description here. AI will tailor your resume to match the keywords..."></textarea>
+      </div>
+
+      <button class="btn-generate" id="genBtn" onclick="generate()">
+        ✦ Generate My Resume
+      </button>
+
+      <div class="limit-notice">
+        <span class="icon">💡</span>
+        <span>Free plan: 5 resumes/hour. <strong style="color:var(--gold)">Go Pro</strong> for unlimited + more templates.</span>
+      </div>
+
+      <div class="error-box" id="errBox"></div>
+    </div>
+
+    <!-- RIGHT: OUTPUT -->
+    <div id="rightPanel">
+
+      <div class="card panel-empty" id="stateEmpty">
+        <div class="big-icon">📄</div>
+        <h3>Your Resume Appears Here</h3>
+        <p>Fill in your details on the left and hit Generate. Your AI-crafted resume, cover letter and ATS score will appear instantly — no sign up needed.</p>
+      </div>
+
+      <div class="card panel-loading" id="stateLoad">
+        <div class="spin"></div>
+        <div class="load-title">Crafting your resume...</div>
+        <div class="load-sub">Our AI is writing something great for you</div>
+        <div class="steps">
+          <div class="step" id="s1"><div class="step-dot"></div> Analyzing your experience</div>
+          <div class="step" id="s2"><div class="step-dot"></div> Matching job keywords</div>
+          <div class="step" id="s3"><div class="step-dot"></div> Writing cover letter</div>
+          <div class="step" id="s4"><div class="step-dot"></div> Scoring ATS compatibility</div>
+        </div>
+      </div>
+
+      <div class="panel-result" id="stateResult">
+
+        <div class="card score-card" id="scoreCard">
+          <div class="score-circle" id="scoreCircle">
+            <div class="score-num" id="scoreNum">--</div>
+          </div>
+          <div class="score-info">
+            <h4>ATS Compatibility Score</h4>
+            <p id="scoreMsg">Your resume's ability to pass automated screening systems used by companies.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="tabs">
+            <button class="tab on" onclick="showTab('resume',this)">📄 Resume</button>
+            <button class="tab" onclick="showTab('cover',this)">✉️ Cover Letter</button>
+            <button class="tab" onclick="showTab('tips',this)">💡 Tips</button>
+          </div>
+
+          <div class="tab-pane on" id="tp-resume">
+            <div class="result-text" id="outResume"></div>
+            <button class="btn-copy" onclick="copy('outResume', this)">📋 Copy Resume</button>
+          </div>
+
+          <div class="tab-pane" id="tp-cover">
+            <div class="result-text" id="outCover"></div>
+            <button class="btn-copy" onclick="copy('outCover', this)">📋 Copy Cover Letter</button>
+          </div>
+
+          <div class="tab-pane" id="tp-tips">
+            <ul class="tips" id="outTips"></ul>
+          </div>
+
+          <div class="pro-banner">
+            <div class="pro-text">
+              <h4>⭐ Unlock Pro Features</h4>
+              <p>Unlimited resumes · 5 templates · LinkedIn optimizer · Priority AI</p>
+            </div>
+            <button class="btn-pro" onclick="alert('Pro plan coming soon! ₹99/month.')">Upgrade ₹99/mo</button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  // ⚠️ Change this to your deployed backend URL when you deploy to Render/Railway
+  // Example: const API = 'https://resumeai-server.onrender.com';
+  const API = 'https://resumeai-server-x5jo.onrender.com';
+
+  function showTab(name, btn) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('on'));
+    btn.classList.add('on');
+    document.getElementById('tp-' + name).classList.add('on');
+  }
+
+  function copy(id, btn) {
+    const text = document.getElementById(id).innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = '✅ Copied!';
+      setTimeout(() => btn.textContent = '📋 Copy ' + (id === 'outResume' ? 'Resume' : 'Cover Letter'), 2000);
+    });
+  }
+
+  function setState(name) {
+    document.getElementById('stateEmpty').style.display = 'none';
+    document.getElementById('stateLoad').classList.remove('show');
+    document.getElementById('stateResult').classList.remove('show');
+    if (name === 'empty') document.getElementById('stateEmpty').style.display = 'block';
+    if (name === 'load') document.getElementById('stateLoad').classList.add('show');
+    if (name === 'result') document.getElementById('stateResult').classList.add('show');
+  }
+
+  async function animateSteps() {
+    const ids = ['s1','s2','s3','s4'];
+    for (let i = 0; i < ids.length; i++) {
+      if (i > 0) document.getElementById(ids[i-1]).className = 'step done';
+      document.getElementById(ids[i]).className = 'step active';
+      await new Promise(r => setTimeout(r, 850));
+    }
+  }
+
+  function setScore(score) {
+    document.getElementById('scoreNum').textContent = score + '%';
+    const deg = Math.round((score / 100) * 360);
+    const color = score >= 80 ? '#3dd68c' : score >= 60 ? '#f5d060' : '#f7754f';
+    document.getElementById('scoreCircle').style.background =
+      `conic-gradient(${color} ${deg}deg, #232438 ${deg}deg)`;
+    document.getElementById('scoreNum').style.color = color;
+
+    const msg = score >= 80
+      ? '🎉 Excellent! Your resume is well-optimized for ATS systems.'
+      : score >= 65
+      ? '👍 Good score. A few tweaks can push you above 80%.'
+      : '⚠️ Needs improvement. Check the Tips tab for specific advice.';
+    document.getElementById('scoreMsg').textContent = msg;
+  }
+
+  async function generate() {
+    const name = document.getElementById('name').value.trim();
+    const role = document.getElementById('role').value.trim();
+    const errBox = document.getElementById('errBox');
+    errBox.classList.remove('show');
+
+    if (!name || !role) {
+      errBox.textContent = '⚠️ Please fill in at least your Name and Target Role to continue.';
+      errBox.classList.add('show');
+      return;
+    }
+
+    document.getElementById('genBtn').disabled = true;
+    setState('load');
+
+    // Reset steps
+    ['s1','s2','s3','s4'].forEach(id => document.getElementById(id).className = 'step');
+    animateSteps();
+
+    const body = {
+      name, role,
+      email: document.getElementById('email').value,
+      phone: document.getElementById('phone').value,
+      links: document.getElementById('links').value,
+      experience: document.getElementById('experience').value,
+      education: document.getElementById('education').value,
+      skills: document.getElementById('skills').value,
+      projects: document.getElementById('projects').value,
+      jobDesc: document.getElementById('jobDesc').value,
+    };
+
+    try {
+      const res = await fetch(`${API}/api/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Something went wrong. Please try again.');
+      }
+
+      document.getElementById('outResume').textContent = data.resume || '';
+      document.getElementById('outCover').textContent = data.coverLetter || '';
+
+      const score = data.atsScore || 75;
+      const tipsList = document.getElementById('outTips');
+      tipsList.innerHTML = '';
+      (data.tips || []).forEach((tip, i) => {
+        tipsList.innerHTML += `<li class="tip"><div class="tip-n">${i+1}</div><span>${tip}</span></li>`;
+      });
+
+      setState('result');
+      setTimeout(() => setScore(score), 200);
+
+      // Switch to resume tab
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+      document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('on'));
+      document.querySelector('.tab').classList.add('on');
+      document.getElementById('tp-resume').classList.add('on');
+
+    } catch (err) {
+      setState('empty');
+      errBox.textContent = '❌ ' + err.message;
+      errBox.classList.add('show');
+    }
+
+    document.getElementById('genBtn').disabled = false;
+  }
+</script>
+
+</body>
+</html>
